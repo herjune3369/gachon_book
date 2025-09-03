@@ -39,8 +39,8 @@ jobs:
         run: |
           echo "ec2_public_ip=$(terraform output -raw ec2_public_ip)" >> $GITHUB_ENV
           echo "rds_endpoint=$(terraform output -raw rds_endpoint)" >> $GITHUB_ENV
-        working-directory: ./terraform-basics
           echo "alb_dns_name=$(terraform output -raw alb_dns_name)" >> $GITHUB_ENV
+        working-directory: ./terraform-basics
 
       # 5. Ansible 실행
       - name: Install Ansible
