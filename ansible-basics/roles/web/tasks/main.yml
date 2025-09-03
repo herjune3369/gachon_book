@@ -18,7 +18,6 @@
     src: app.py.j2
     dest: /home/ubuntu/app.py
     mode: '0644'
-  notify: restart flask
 
 - name: Start Flask app
   shell: |

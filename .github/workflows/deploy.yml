@@ -41,11 +41,11 @@ jobs:
           echo "Checking terraform state..."
           terraform state list
           
-          # Terraform output 직접 실행 (디버그 정보 제거)
+          # Terraform output 직접 실행
           echo "Getting terraform outputs..."
-          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null | head -n1 | tr -d '\n\r' | sed 's/::debug::.*$//' || echo "")
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null | head -n1 | tr -d '\n\r' | sed 's/::debug::.*$//' | cut -d: -f1 || echo "")
-          ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null | head -n1 | tr -d '\n\r' | sed 's/::debug::.*$//' || echo "")
+          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null | grep -v "::debug::" | head -n1 || echo "")
+          RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null | grep -v "::debug::" | head -n1 | cut -d: -f1 || echo "")
+          ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null | grep -v "::debug::" | head -n1 || echo "")
           
           # 값이 비어있으면 오류
           if [ -z "$EC2_IP" ]; then
