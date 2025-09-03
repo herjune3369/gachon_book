@@ -1,0 +1,10 @@
+- name: Deploy Flask Webserver with DB Connection
+  hosts: webserver
+  become: true
+  vars:
+    rds_endpoint: "{{ rds_endpoint }}" 
+    db_user: "admin"
+    db_password: "Passw0rd123!"
+    db_name: "sajuapp"
+  roles:
+    - web

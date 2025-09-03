@@ -1,0 +1,28 @@
+from flask import Flask
+import pymysql
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "AI 사주 앱 – Ansible 자동 배포 성공!"
+
+@app.route("/db")
+def test_db():
+    try:
+        conn = pymysql.connect(
+            host="{{ rds_endpoint }}",
+            user="{{ db_user }}",
+            password="{{ db_password }}",
+            database="{{ db_name }}"
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT NOW()")
+        result = cursor.fetchone()
+        conn.close()
+        return f"DB 연결 성공! 현재 시간: {result}"
+    except Exception as e:
+        return f"DB 연결 실패: {str(e)}"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

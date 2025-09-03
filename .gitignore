@@ -1,0 +1,23 @@
+cat > .gitignore << 'EOF'
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+
+# Ansible
+*.retry
+
+# VSCode/JetBrains
+.vscode/
+.idea/
+EOF

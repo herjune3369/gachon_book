@@ -1,0 +1,20 @@
+- name: Install required packages
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python3-pymysql
+    state: present
+    update_cache: yes
+
+- name: Install Flask and PyMySQL
+  pip:
+    name:
+      - flask
+      - pymysql
+
+- name: Deploy Flask app from template
+  template:
+    src: app.py.j2
+    dest: /home/ubuntu/app.py
+    mode: '0644'
