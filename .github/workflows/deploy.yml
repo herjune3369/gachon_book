@@ -44,7 +44,7 @@ jobs:
           # Terraform output 직접 실행
           echo "Getting terraform outputs..."
           EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null | grep -v "::debug::" | head -n1 || echo "")
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null | grep -v "::debug::" | head -n1 | cut -d: -f1 || echo "")
+          RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null | grep -v "::debug::" | head -n1 || echo "")
           ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null | grep -v "::debug::" | head -n1 || echo "")
           
           # 값이 비어있으면 오류
@@ -88,11 +88,11 @@ jobs:
           chmod 700 ~/.ssh
           
           # Terraform에서 생성된 키 파일을 SSH 디렉토리로 복사
-          cp terraform-basics/terraform-key.pem ~/.ssh/terraform-key.pem
-          chmod 600 ~/.ssh/terraform-key.pem
+          cp terraform-basics/terraform-key.pem /home/runner/.ssh/terraform-key.pem
+          chmod 600 /home/runner/.ssh/terraform-key.pem
           
           # 키 파일 확인
-          ls -la ~/.ssh/terraform-key.pem
+          ls -la /home/runner/.ssh/terraform-key.pem
 
       - name: Generate Ansible Inventory
         run: |
@@ -106,7 +106,7 @@ jobs:
           # 새로운 inventory 파일 생성
           cat > ansible-basics/inventory.ini << EOF
           [webserver]
-          $EC2_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/terraform-key.pem
+          $EC2_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/runner/.ssh/terraform-key.pem
           EOF
           
           # 생성된 inventory 파일 확인
