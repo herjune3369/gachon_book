@@ -37,13 +37,25 @@ jobs:
       - name: Get Terraform Outputs
         id: tf-out
         run: |
-          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null || echo "")
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null || echo "")
-          ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null || echo "")
+          # Terraform output을 파일로 저장 후 읽기
+          terraform output -raw ec2_public_ip > /tmp/ec2_ip.txt 2>/dev/null || echo "" > /tmp/ec2_ip.txt
+          terraform output -raw rds_endpoint > /tmp/rds_endpoint.txt 2>/dev/null || echo "" > /tmp/rds_endpoint.txt
+          terraform output -raw alb_dns_name > /tmp/alb_dns.txt 2>/dev/null || echo "" > /tmp/alb_dns.txt
           
+          # 파일에서 첫 번째 줄만 읽기 (디버그 정보 제거)
+          EC2_IP=$(head -n1 /tmp/ec2_ip.txt | tr -d '\n\r')
+          RDS_ENDPOINT=$(head -n1 /tmp/rds_endpoint.txt | tr -d '\n\r')
+          ALB_DNS=$(head -n1 /tmp/alb_dns.txt | tr -d '\n\r')
+          
+          # 환경변수 설정
           echo "ec2_public_ip=$EC2_IP" >> $GITHUB_ENV
           echo "rds_endpoint=$RDS_ENDPOINT" >> $GITHUB_ENV
           echo "alb_dns_name=$ALB_DNS" >> $GITHUB_ENV
+          
+          # 디버그용 출력
+          echo "EC2 IP: $EC2_IP"
+          echo "RDS Endpoint: $RDS_ENDPOINT"
+          echo "ALB DNS: $ALB_DNS"
         working-directory: ./terraform-basics
 
       # 5. Ansible 실행
