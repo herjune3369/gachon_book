@@ -29,8 +29,17 @@ jobs:
         run: terraform init
         working-directory: ./terraform-basics
 
+      - name: Clean Previous Resources
+        run: terraform destroy -auto-approve || true
+        working-directory: ./terraform-basics
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        working-directory: ./terraform-basics
+
+      - name: Terraform Destroy on Failure
+        if: failure()
+        run: terraform destroy -auto-approve
         working-directory: ./terraform-basics
 
       # 4. Terraform Output 추출
@@ -50,3 +59,8 @@ jobs:
         run: |
           ansible-playbook -i ansible-basics/inventory.ini ansible-basics/playbook.yml \
             --extra-vars "rds_endpoint=${{ env.rds_endpoint }} ec2_public_ip=${{ env.ec2_public_ip }}"
+
+      - name: Cleanup on Ansible Failure
+        if: failure()
+        run: terraform destroy -auto-approve
+        working-directory: ./terraform-basics
