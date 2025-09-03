@@ -195,6 +195,7 @@ output "ec2_public_ip" {
 
 output "rds_endpoint" {
   value = aws_db_instance.mysql.endpoint
+  description = "RDS instance endpoint without port"
 }
 
 output "alb_dns_name" {

@@ -44,7 +44,7 @@ jobs:
           
           # 파일에서 첫 번째 줄만 읽기 (디버그 정보 제거)
           EC2_IP=$(head -n1 /tmp/ec2_ip.txt | tr -d '\n\r')
-          RDS_ENDPOINT=$(head -n1 /tmp/rds_endpoint.txt | tr -d '\n\r')
+          RDS_ENDPOINT=$(head -n1 /tmp/rds_endpoint.txt | tr -d '\n\r' | cut -d: -f1)  # 포트 제거
           ALB_DNS=$(head -n1 /tmp/alb_dns.txt | tr -d '\n\r')
           
           # 환경변수 설정
