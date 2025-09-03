@@ -182,7 +182,7 @@ resource "aws_key_pair" "deployer" {
 # 로컬에 프라이빗 키 저장
 resource "local_file" "private_key_pem" {
   content  = tls_private_key.ssh_key.private_key_pem
-  filename = "/Users/junheo/.ssh/terraform-key.pem"
+  filename = "terraform-key.pem"
   file_permission = "0600"
 }
 

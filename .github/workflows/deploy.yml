@@ -62,6 +62,19 @@ jobs:
       - name: Install Ansible
         run: sudo apt-get update && sudo apt-get install -y ansible
 
+      - name: Setup SSH Key
+        run: |
+          # SSH 디렉토리 생성
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          # Terraform에서 생성된 키 파일을 SSH 디렉토리로 복사
+          cp terraform-basics/terraform-key.pem ~/.ssh/terraform-key.pem
+          chmod 600 ~/.ssh/terraform-key.pem
+          
+          # 키 파일 확인
+          ls -la ~/.ssh/terraform-key.pem
+
       - name: Generate Ansible Inventory
         run: |
           # Terraform output에서 EC2 IP를 받아서 inventory 파일 생성
