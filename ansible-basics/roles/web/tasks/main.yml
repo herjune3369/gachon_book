@@ -18,3 +18,11 @@
     src: app.py.j2
     dest: /home/ubuntu/app.py
     mode: '0644'
+  notify: restart flask
+
+- name: Start Flask app
+  shell: |
+    pkill -f app.py || true
+    nohup python3 /home/ubuntu/app.py > /home/ubuntu/flask.log 2>&1 &
+  args:
+    creates: /home/ubuntu/flask.log
