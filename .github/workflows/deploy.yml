@@ -37,9 +37,13 @@ jobs:
       - name: Get Terraform Outputs
         id: tf-out
         run: |
-          echo "ec2_public_ip=$(terraform output -raw ec2_public_ip)" >> $GITHUB_ENV
-          echo "rds_endpoint=$(terraform output -raw rds_endpoint)" >> $GITHUB_ENV
-          echo "alb_dns_name=$(terraform output -raw alb_dns_name)" >> $GITHUB_ENV
+          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null || echo "")
+          RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null || echo "")
+          ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null || echo "")
+          
+          echo "ec2_public_ip=$EC2_IP" >> $GITHUB_ENV
+          echo "rds_endpoint=$RDS_ENDPOINT" >> $GITHUB_ENV
+          echo "alb_dns_name=$ALB_DNS" >> $GITHUB_ENV
         working-directory: ./terraform-basics
 
       # 5. Ansible 실행
