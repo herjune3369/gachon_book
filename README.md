@@ -53,4 +53,4 @@ terraform apply
 - **Cloud**: AWS (EC2, RDS, ALB, VPC)
 - **Application**: Python Flask
 - **Database**: MySQL
-- **OS**: Ubuntu 20.04 LTS
+- **OS**: Ubuntu 20.04 LTS# GitHub Actions CI/CD Pipeline
