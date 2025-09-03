@@ -96,9 +96,14 @@ jobs:
 
       - name: Generate Ansible Inventory
         run: |
-          # 환경변수에서 EC2 IP 가져오기
-          EC2_IP="${{ env.ec2_public_ip }}"
+          # Terraform output에서 직접 EC2 IP 가져오기
+          EC2_IP=$(cd terraform-basics && terraform output -raw ec2_public_ip 2>/dev/null | head -n1 | tr -d '\n\r' || echo "")
           echo "EC2_IP: $EC2_IP"
+          
+          if [ -z "$EC2_IP" ]; then
+            echo "ERROR: EC2_IP is empty!"
+            exit 1
+          fi
           
           # 기존 inventory 파일 삭제
           rm -f ansible-basics/inventory.ini
@@ -118,9 +123,14 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          # 환경변수에서 RDS 엔드포인트 가져오기
-          RDS_ENDPOINT="${{ env.rds_endpoint }}"
+          # Terraform output에서 직접 RDS 엔드포인트 가져오기
+          RDS_ENDPOINT=$(cd terraform-basics && terraform output -raw rds_endpoint 2>/dev/null | head -n1 | tr -d '\n\r' || echo "")
           echo "RDS_ENDPOINT: $RDS_ENDPOINT"
+          
+          if [ -z "$RDS_ENDPOINT" ]; then
+            echo "ERROR: RDS_ENDPOINT is empty!"
+            exit 1
+          fi
           
           # Ansible 실행
           ansible-playbook -i ansible-basics/inventory.ini ansible-basics/playbook.yml \
