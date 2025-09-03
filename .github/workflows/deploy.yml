@@ -107,17 +107,29 @@ jobs:
 
       - name: Generate Ansible Inventory
         run: |
-          # Terraform output에서 직접 EC2 IP 가져오기
+          echo "=== Terraform 상태 확인 ==="
           cd terraform-basics
-          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null | head -n1 | tr -d '\n\r' || echo "")
-          cd ..
-          echo "EC2_IP: $EC2_IP"
+          echo "현재 디렉토리: $(pwd)"
+          echo "Terraform 상태:"
+          terraform state list
+          echo ""
+          echo "모든 Terraform outputs:"
+          terraform output
+          echo ""
           
-          if [ -z "$EC2_IP" ]; then
-            echo "ERROR: EC2_IP is empty!"
-            echo "Terraform outputs:"
+          # Terraform output에서 직접 EC2 IP 가져오기
+          echo "=== EC2 IP 추출 ==="
+          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null | head -n1 | tr -d '\n\r' || echo "")
+          echo "추출된 EC2_IP: '$EC2_IP'"
+          echo "EC2_IP 길이: ${#EC2_IP}"
+          
+          cd ..
+          
+          if [ -z "$EC2_IP" ] || [ "$EC2_IP" = "null" ]; then
+            echo "ERROR: EC2_IP is empty or null!"
+            echo "Terraform outputs 다시 확인:"
             cd terraform-basics
-            terraform output
+            terraform output -json
             cd ..
             exit 1
           fi
@@ -126,16 +138,19 @@ jobs:
           rm -f ansible-basics/inventory.ini
           
           # 새로운 inventory 파일 생성
+          echo "=== 인벤토리 파일 생성 ==="
           cat > ansible-basics/inventory.ini << EOF
           [webserver]
           $EC2_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/runner/.ssh/terraform-key.pem
           EOF
           
           # 생성된 inventory 파일 확인
-          echo "Generated inventory:"
+          echo "생성된 inventory 파일 내용:"
           cat ansible-basics/inventory.ini
+          echo ""
           
           # inventory 파일 유효성 검사
+          echo "=== 인벤토리 유효성 검사 ==="
           ansible-inventory -i ansible-basics/inventory.ini --list
 
       - name: Run Ansible Playbook
