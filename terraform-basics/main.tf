@@ -6,7 +6,7 @@ provider "aws" {
 # VPC
 # -----------------------------
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = "10.1.0.0/16"
   tags = {
     Name = "terraform-vpc"
   }
@@ -17,7 +17,7 @@ resource "aws_vpc" "main" {
 # -----------------------------
 resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.11.0/24"
+  cidr_block              = "10.1.11.0/24"
   availability_zone       = "ap-northeast-2a"
   map_public_ip_on_launch = true
   tags = { Name = "public-a" }
@@ -25,7 +25,7 @@ resource "aws_subnet" "public_a" {
 
 resource "aws_subnet" "public_b" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.12.0/24"
+  cidr_block              = "10.1.12.0/24"
   availability_zone       = "ap-northeast-2b"
   map_public_ip_on_launch = true
   tags = { Name = "public-b" }
@@ -33,7 +33,7 @@ resource "aws_subnet" "public_b" {
 
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.21.0/24"
+  cidr_block        = "10.1.21.0/24"
   availability_zone = "ap-northeast-2c"
   tags = { Name = "private" }
 }

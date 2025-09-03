@@ -29,29 +29,6 @@ jobs:
         run: terraform init
         working-directory: ./terraform-basics
 
-      - name: Import existing AWS resources
-        run: |
-          # Import VPC and Key Pair
-          terraform import aws_vpc.main vpc-09d14c7e05d32afa5 || true
-          terraform import aws_key_pair.deployer terraform-key || true
-          
-          # Import Subnets
-          terraform import aws_subnet.public_a subnet-04756b2926d79b540 || true
-          terraform import aws_subnet.public_b subnet-0af934d41acac6b70 || true
-          terraform import aws_subnet.private subnet-02137d48a73dfac05 || true
-          
-          # Import Internet Gateway
-          terraform import aws_internet_gateway.gw igw-0404a125e97e9ef96 || true
-          
-          # Import Security Groups
-          terraform import aws_security_group.web_sg sg-024b3247e4a6d41eb || true
-          terraform import aws_security_group.alb_sg sg-0e3498c2761d4de1e || true
-          terraform import aws_security_group.db_sg sg-0426952457905b1ed || true
-          
-          # Import Target Group
-          terraform import aws_lb_target_group.app_tg arn:aws:elasticloadbalancing:ap-northeast-2:483260554116:targetgroup/terraform-tg/c9d323ce788c4267 || true
-        working-directory: ./terraform-basics
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform-basics
