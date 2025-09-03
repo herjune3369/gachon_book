@@ -96,25 +96,9 @@ jobs:
 
       - name: Generate Ansible Inventory
         run: |
-          # 환경변수 확인
-          echo "EC2_IP from env: ${{ env.ec2_public_ip }}"
-          echo "RDS_ENDPOINT from env: ${{ env.rds_endpoint }}"
-          echo "ALB_DNS from env: ${{ env.alb_dns_name }}"
-          
-          # EC2 IP가 비어있으면 Terraform output에서 직접 가져오기
-          if [ -z "${{ env.ec2_public_ip }}" ]; then
-            echo "EC2_IP is empty, getting from terraform output..."
-            EC2_IP=$(cd terraform-basics && terraform output -raw ec2_public_ip 2>/dev/null | head -n1 | tr -d '\n\r')
-            echo "EC2_IP from terraform: $EC2_IP"
-          else
-            EC2_IP="${{ env.ec2_public_ip }}"
-          fi
-          
-          # EC2 IP가 여전히 비어있으면 오류
-          if [ -z "$EC2_IP" ]; then
-            echo "ERROR: EC2_IP is still empty!"
-            exit 1
-          fi
+          # 환경변수에서 EC2 IP 가져오기
+          EC2_IP="${{ env.ec2_public_ip }}"
+          echo "EC2_IP: $EC2_IP"
           
           # 기존 inventory 파일 삭제
           rm -f ansible-basics/inventory.ini
@@ -134,10 +118,8 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          # Terraform output에서 직접 변수 가져오기
-          RDS_ENDPOINT=$(cd terraform-basics && terraform output -raw rds_endpoint 2>/dev/null | grep -v "::debug::" | head -n1 | cut -d: -f1 || echo "")
-          
-          # 변수 확인
+          # 환경변수에서 RDS 엔드포인트 가져오기
+          RDS_ENDPOINT="${{ env.rds_endpoint }}"
           echo "RDS_ENDPOINT: $RDS_ENDPOINT"
           
           # Ansible 실행
