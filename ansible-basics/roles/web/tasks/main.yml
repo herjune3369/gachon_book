@@ -18,6 +18,7 @@
 
 - name: Kill existing Flask app
   shell: pkill -f app.py || true
+  ignore_errors: true
 
 - name: Start Flask app
   shell: nohup python3 /home/ubuntu/app.py > /home/ubuntu/flask.log 2>&1 &
