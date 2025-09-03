@@ -5,10 +5,10 @@ provider "aws" {
 # -----------------------------
 # VPC
 # -----------------------------
-resource "aws_vpc" "main" {
-  cidr_block = "10.1.0.0/16"
-  tags = {
-    Name = "terraform-vpc"
+data "aws_vpc" "main" {
+  filter {
+    name   = "tag:Name"
+    values = ["terraform-vpc"]
   }
 }
 
@@ -16,7 +16,7 @@ resource "aws_vpc" "main" {
 # Subnets (2 Public, 1 Private)
 # -----------------------------
 resource "aws_subnet" "public_a" {
-  vpc_id                  = aws_vpc.main.id
+  vpc_id                  = data.aws_vpc.main.id
   cidr_block              = "10.1.11.0/24"
   availability_zone       = "ap-northeast-2a"
   map_public_ip_on_launch = true
@@ -24,7 +24,7 @@ resource "aws_subnet" "public_a" {
 }
 
 resource "aws_subnet" "public_b" {
-  vpc_id                  = aws_vpc.main.id
+  vpc_id                  = data.aws_vpc.main.id
   cidr_block              = "10.1.12.0/24"
   availability_zone       = "ap-northeast-2b"
   map_public_ip_on_launch = true
@@ -32,7 +32,7 @@ resource "aws_subnet" "public_b" {
 }
 
 resource "aws_subnet" "private" {
-  vpc_id            = aws_vpc.main.id
+  vpc_id            = data.aws_vpc.main.id
   cidr_block        = "10.1.21.0/24"
   availability_zone = "ap-northeast-2c"
   tags = { Name = "private" }
@@ -42,12 +42,12 @@ resource "aws_subnet" "private" {
 # Internet Gateway & Route Table
 # -----------------------------
 resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = data.aws_vpc.main.id
   tags   = { Name = "terraform-igw" }
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = data.aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.gw.id
@@ -176,7 +176,12 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits  = 4096
 }
 
+data "aws_key_pair" "existing" {
+  key_name = "terraform-key"
+}
+
 resource "aws_key_pair" "deployer" {
+  count      = data.aws_key_pair.existing.key_name == null ? 1 : 0
   key_name   = "terraform-key"
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
