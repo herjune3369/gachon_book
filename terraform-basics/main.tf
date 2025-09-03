@@ -160,18 +160,7 @@ resource "aws_instance" "web" {
   user_data = <<-EOF
               #!/bin/bash
               apt-get update -y
-              apt-get install -y python3-pip
-              pip3 install flask
-              cat << APP > /home/ubuntu/app.py
-              from flask import Flask
-              app = Flask(__name__)
-              @app.route("/")
-              def hello():
-                  return "AI 사주 앱 – Terraform Mini Project!"
-              if __name__ == "__main__":
-                  app.run(host="0.0.0.0", port=5000)
-              APP
-              nohup python3 /home/ubuntu/app.py &
+              # Flask 앱은 Ansible이 배포하도록 함
               EOF
 
   tags = { Name = "terraform-ec2" }
