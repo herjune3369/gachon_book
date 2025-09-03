@@ -8,10 +8,7 @@
     update_cache: yes
 
 - name: Install Flask and PyMySQL
-  pip:
-    name:
-      - flask
-      - pymysql
+  shell: pip3 install flask pymysql
 
 - name: Deploy Flask app from template
   template:
@@ -19,9 +16,17 @@
     dest: /home/ubuntu/app.py
     mode: '0644'
 
+- name: Kill existing Flask app
+  shell: pkill -f app.py || true
+
 - name: Start Flask app
-  shell: |
-    pkill -f app.py || true
-    nohup python3 /home/ubuntu/app.py > /home/ubuntu/flask.log 2>&1 &
-  args:
-    creates: /home/ubuntu/flask.log
+  shell: nohup python3 /home/ubuntu/app.py > /home/ubuntu/flask.log 2>&1 &
+
+- name: Wait for Flask app to start
+  pause:
+    seconds: 5
+
+- name: Check Flask app is running
+  shell: ps aux | grep app.py | grep -v grep
+  register: flask_process
+  failed_when: flask_process.stdout == ""
