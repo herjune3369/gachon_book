@@ -29,6 +29,12 @@ jobs:
         run: terraform init
         working-directory: ./terraform-basics
 
+      - name: Import existing VPC and Key Pair
+        run: |
+          terraform import aws_vpc.main vpc-09d14c7e05d32afa5 || true
+          terraform import aws_key_pair.deployer terraform-key || true
+        working-directory: ./terraform-basics
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform-basics
