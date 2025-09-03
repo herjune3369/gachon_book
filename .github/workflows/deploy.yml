@@ -3,6 +3,7 @@ name: CI/CD with Terraform and Ansible
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:  # 수동 실행 허용
 
 jobs:
   deploy:
@@ -87,9 +88,19 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
+          # Terraform에서 생성된 키 파일 확인
+          echo "Checking for SSH key file..."
+          ls -la terraform-basics/terraform-key.pem || echo "SSH key file not found!"
+          
           # Terraform에서 생성된 키 파일을 SSH 디렉토리로 복사
-          cp terraform-basics/terraform-key.pem /home/runner/.ssh/terraform-key.pem
-          chmod 600 /home/runner/.ssh/terraform-key.pem
+          if [ -f "terraform-basics/terraform-key.pem" ]; then
+            cp terraform-basics/terraform-key.pem /home/runner/.ssh/terraform-key.pem
+            chmod 600 /home/runner/.ssh/terraform-key.pem
+            echo "SSH key copied successfully"
+          else
+            echo "ERROR: SSH key file not found!"
+            exit 1
+          fi
           
           # 키 파일 확인
           ls -la /home/runner/.ssh/terraform-key.pem
@@ -104,6 +115,10 @@ jobs:
           
           if [ -z "$EC2_IP" ]; then
             echo "ERROR: EC2_IP is empty!"
+            echo "Terraform outputs:"
+            cd terraform-basics
+            terraform output
+            cd ..
             exit 1
           fi
           
@@ -133,6 +148,10 @@ jobs:
           
           if [ -z "$RDS_ENDPOINT" ]; then
             echo "ERROR: RDS_ENDPOINT is empty!"
+            echo "Terraform outputs:"
+            cd terraform-basics
+            terraform output
+            cd ..
             exit 1
           fi
           
