@@ -69,7 +69,7 @@ resource "aws_route_table_association" "public_b_assoc" {
 # Security Groups
 # -----------------------------
 resource "aws_security_group" "web_sg" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = data.aws_vpc.main.id
   name   = "web-sg"
 
   ingress {
@@ -97,7 +97,7 @@ resource "aws_security_group" "web_sg" {
 }
 
 resource "aws_security_group" "db_sg" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = data.aws_vpc.main.id
   name   = "db-sg"
 
   ingress {
@@ -118,7 +118,7 @@ resource "aws_security_group" "db_sg" {
 }
 
 resource "aws_security_group" "alb_sg" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = data.aws_vpc.main.id
   name   = "alb-sg"
 
   ingress {
